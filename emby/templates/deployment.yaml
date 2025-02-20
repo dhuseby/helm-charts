@@ -42,9 +42,9 @@ spec:
               mountPath: {{ .mountPath }}
             {{- end }}
           env:
-            {{- range .Values.env }}
-            - name: {{ .name }}
-              value: {{ .value }}
+            {{- range $key, $value := .Values.env }}
+            - name: {{ $key }}
+              value: "{{ $value }}"
             {{- end }}
 
       volumes:
