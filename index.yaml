@@ -3,12 +3,12 @@ entries:
   emby:
   - apiVersion: v2
     appVersion: latest
-    created: "2025-02-19T23:48:06.194060933-07:00"
+    created: "2025-02-20T08:56:29.339317952-07:00"
     description: A Helm chart for deploying Emby Media Server
-    digest: 1ff4ce7f2926711c12b8991351173762af6f96e0985a5153cc798ae2a51b7111
+    digest: aabc278145013e7aa5c1803ac7f66d1d8a34fb819281382045c01bb68f7651a6
     name: emby
     type: application
     urls:
-    - emby/emby-0.1.3.tgz
-    version: 0.1.3
-generated: "2025-02-19T23:48:06.193352036-07:00"
+    - emby/emby-0.1.4.tgz
+    version: 0.1.4
+generated: "2025-02-20T08:56:29.338343606-07:00"
