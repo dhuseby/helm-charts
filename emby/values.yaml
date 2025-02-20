@@ -51,8 +51,10 @@ ingress:
       # - "example.local"
 
 securityContext:
-  runAsUser: 1000
-  fsGroup: 1000
+  runAsUser: 0
+  runAsGroup: 0
+  fsGroup: 0
+  allowPrivilegeEscalation: false
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
