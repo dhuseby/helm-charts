@@ -1,0 +1,76 @@
+replicaCount: 1
+
+image:
+  repository: emby/embyserver
+  pullPolicy: IfNotPresent
+  tag: latest
+
+service:
+  type: ClusterIP
+  port: 8096
+
+serviceAccount:
+  create: false
+  automount: false
+  annotations: {}
+  name: ""
+
+persistence:
+  config:
+    enabled: false
+    # existingClaim: emby-config
+
+  media:
+    enabled: false
+    # existingClaim: emby-media
+
+volumeMounts:
+  # - name: emby-config
+  #   mountPath: /config
+  # - name: emby-media
+  #   mountPath: /srv
+
+env:
+  - name: UID
+    value: 1000
+  - name: GID
+    value: 1000
+  - name: GIDLIST
+    value: 1000
+
+ingress:
+  className: nginx
+  enabled: false
+  annotations: {}
+  # cert-manager.io/cluster-issuer: "letsencrypt-tls"
+  hosts:
+    - host: example.local
+      paths:
+        - path: /
+          pathType: Prefix
+  # tls:
+    # - secretName: emby-tls
+    # hosts:
+      # - "example.local"
+
+securityContext:
+  runAsUser: 1000
+  fsGroup: 1000
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
