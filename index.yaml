@@ -9,6 +9,6 @@ entries:
     name: emby
     type: application
     urls:
-    - https://dhuseby.github.io/helm-charts/emby-0.1.1.tgz
+    - emby/emby-0.1.1.tgz
     version: 0.1.1
 generated: "2025-02-19T23:22:32.847021008-07:00"
