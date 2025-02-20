@@ -3,6 +3,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ include "emby.fullname" . }}-ingress
+  namespace: {{ .Values.service.namespace | default "default" }}
   labels:
     {{- include "emby.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}

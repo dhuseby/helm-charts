@@ -8,6 +8,7 @@ image:
 service:
   type: ClusterIP
   port: 8096
+  # namespace: your-namespace
 
 serviceAccount:
   create: false

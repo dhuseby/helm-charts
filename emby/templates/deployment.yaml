@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "emby.fullname" . }}
+  namespace: {{ .Values.service.namespace | default "default" }}
   labels:
     {{- include "emby.labels" . | nindent 4 }}
 spec:
