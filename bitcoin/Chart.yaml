@@ -1,0 +1,5 @@
+apiVersion: v2
+name: bitcoin
+description: Local Bitcoin Node Chart
+version: 0.1.0
+appVersion: "28.1"  # Bitcoin Core version

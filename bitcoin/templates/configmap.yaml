@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-bitcoin-config
+data:
+  bitcoin.conf: |
+    datadir={{ .Values.bitcoinConfig.datadir }}
+    server=1
+    rpcuser={{ .Values.bitcoinConfig.rpcuser }}
+    rpcpassword={{ .Values.bitcoinConfig.rpcpassword }}
+    rpcallowip={{ .Values.bitcoinConfig.rpcallowip }}
+    rpcbind=0.0.0.0
+    rpcport={{ .Values.service.rpc.port }}
+    port={{ .Values.service.p2p.port }}
+    txindex=1
+    # Enable mainnet
+    [main]
+    # Allow connections to global Bitcoin network
+    listen=1
+    discover=1
+    upnp=0

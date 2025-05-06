@@ -1,0 +1,148 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-bitcoin-core
+  labels:
+    app: bitcoin-core
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bitcoin-core
+  template:
+    metadata:
+      labels:
+        app: bitcoin-core
+    spec:
+      nodeSelector:
+        {{ toYaml .Values.nodeSelector | nindent 8 }}
+      containers:
+      - name: bitcoin-core
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.service.p2p.port }}
+          name: p2p
+        - containerPort: {{ .Values.service.rpc.port }}
+          name: rpc
+        volumeMounts:
+        - name: bitcoin-data
+          mountPath: /bitcoin-data
+        - name: bitcoin-config
+          mountPath: /bitcoin-data/bitcoin.conf
+          subPath: bitcoin.conf
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "1"
+          limits:
+            memory: "4Gi"
+            cpu: "2"
+      volumes:
+      - name: bitcoin-data
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-bitcoin-data
+      - name: bitcoin-config
+        configMap:
+          name: {{ .Release.Name }}-bitcoin-config
+
+---
+# templates/pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-bitcoin-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.storage.size }}
+  storageClassName: {{ .Values.storageClassName }}
+  selector:
+    matchLabels:
+      app: bitcoin-core
+      node: bitcoin
+
+---
+# templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-bitcoin-core-p2p
+  annotations:
+    metallb.universe.tf/address-pool: {{ .Values.service.p2p.metallb.ipPool }}
+spec:
+  selector:
+    app: bitcoin-core
+  ports:
+  - protocol: TCP
+    port: {{ .Values.service.p2p.port }}
+    targetPort: p2p
+    name: p2p
+  type: {{ .Values.service.p2p.type }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-bitcoin-core-rpc
+spec:
+  selector:
+    app: bitcoin-core
+  ports:
+  - protocol: TCP
+    port: {{ .Values.service.rpc.port }}
+    targetPort: rpc
+    name: rpc
+  type: {{ .Values.service.rpc.type }}
+
+---
+# templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-bitcoin-config
+data:
+  bitcoin.conf: |
+    datadir={{ .Values.bitcoinConfig.datadir }}
+    server=1
+    rpcuser={{ .Values.bitcoinConfig.rpcuser }}
+    rpcpassword={{ .Values.bitcoinConfig.rpcpassword }}
+    rpcallowip={{ .Values.bitcoinConfig.rpcallowip }}
+    rpcbind=0.0.0.0
+    rpcport={{ .Values.service.rpc.port }}
+    port={{ .Values.service.p2p.port }}
+    txindex=1
+    # Enable mainnet
+    [main]
+    # Allow connections to global Bitcoin network
+    listen=1
+    discover=1
+    upnp=0
+
+---
+# templates/networkpolicy.yaml
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-bitcoin-core-rpc
+spec:
+  podSelector:
+    matchLabels:
+      app: bitcoin-core
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    {{- range .Values.networkPolicy.allowedSubnets }}
+    - ipBlock:
+        cidr: {{ . }}
+    {{- end }}
+    ports:
+    - protocol: TCP
+      port: {{ .Values.service.rpc.port }}
+  - ports:
+    - protocol: TCP
+      port: {{ .Values.service.p2p.port }}
+{{- end }}

@@ -1,0 +1,83 @@
+replicaCount: 1
+
+image:
+  repository: dwgrantham/bitcoin-v28.1
+  pullPolicy: IfNotPresent
+  tag: latest
+
+service:
+  p2p:
+    # namespace: your-namespace
+    port: 8333
+    type: LoadBalancer
+    metallb:
+      ipPool: 172.24.1.100-172.24.1.200
+  rpc:
+    # namespace: your-namespace
+    port: 8332
+    type: ClusterIP
+
+serviceAccount:
+  create: false
+  automount: false
+  annotations: {}
+  name: ""
+
+# enable these in your values to claim existing persistent volume claims
+persistence:
+  data:
+    enabled: false
+    # existingClaim: data
+
+# this chart only supports mounts for the config dir and the root directory
+# with all media in it
+  volumeMounts: []
+  # - name: data
+  #   mountPath: /data
+
+# customize these in your values to tell emby which UID/GID/GIDLIST to switch
+# to when it drops root privileges
+env: {}
+  # UID: "1000"
+  # GID: "1000"
+  # GIDLIST: "1000"
+
+networkPolicy:
+  enabled: false
+  allowedSubnets: []
+  # - 172.24.0.0/16
+
+# this tells the container to run the initial process as root. the entrypoint
+# script will use dosu to change the UID/GID of the main process and
+# effectively drop privs
+securityContext:
+  runAsUser: 0
+  runAsGroup: 0
+  fsGroup: 0
+  allowPrivilegeEscalation: false
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as
+  # a conscious choice for the user. This also increases chances charts run on
+  # environments with little resources, such as Minikube. If you do want to
+  # specify resources, uncomment the following lines, adjust them as necessary,
+  # and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+bitcoinConfig:
+  # rpcuser: bitcoinrpc
+  # rpcpassword: securepassword123
+  # rpcallowip: 172.24.0.0./16
+  # datadir: /bitcoin-data
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+

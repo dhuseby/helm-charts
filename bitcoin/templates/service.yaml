@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-bitcoin-core-p2p
+  annotations:
+    metallb.universe.tf/address-pool: {{ .Values.service.p2p.metallb.ipPool }}
+spec:
+  selector:
+    app: bitcoin-core
+  ports:
+  - protocol: TCP
+    port: {{ .Values.service.p2p.port }}
+    targetPort: p2p
+    name: p2p
+  type: {{ .Values.service.p2p.type }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-bitcoin-core-rpc
+spec:
+  selector:
+    app: bitcoin-core
+  ports:
+  - protocol: TCP
+    port: {{ .Values.service.rpc.port }}
+    targetPort: rpc
+    name: rpc
+  type: {{ .Values.service.rpc.type }}
