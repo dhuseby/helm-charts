@@ -6,6 +6,7 @@ data:
   bitcoin.conf: |
     datadir={{ .Values.bitcoinConfig.datadir }}
     server=1
+    daemon=0
     rpcuser={{ .Values.bitcoinConfig.rpcuser }}
     rpcpassword={{ .Values.bitcoinConfig.rpcpassword }}
     rpcallowip={{ .Values.bitcoinConfig.rpcallowip }}
